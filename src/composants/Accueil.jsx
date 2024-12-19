@@ -16,6 +16,8 @@ function Accueil() {
     prix: ''
   });
 
+  const [isModalOpen, setIsModalOpen] = useState(false);  // État pour ouvrir/fermer le modal
+
   useEffect(() => {
     axios.get('https://formation-backend.onrender.com/api/formations')
       .then(response => {
@@ -59,6 +61,7 @@ function Accueil() {
       thematique: formation.thematique,
       prix: formation.prix
     });
+    setIsModalOpen(true);  // Ouvrir le modal lors de l'édition
   };
 
   // Mettre à jour une formation
@@ -77,6 +80,7 @@ function Accueil() {
         setFormations(formations.map(formation => 
           formation._id === editingFormation._id ? response.data : formation
         ));
+        setIsModalOpen(false);  // Fermer le modal après mise à jour
         setEditingFormation(null);
       })
       .catch(error => {
@@ -91,6 +95,12 @@ function Accueil() {
       ...updatedFormation,
       [name]: value
     });
+  };
+
+  // Fermer le modal
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setEditingFormation(null);
   };
 
   return (
@@ -109,25 +119,25 @@ function Accueil() {
               <p className="text-gray-700">Date de la formation: {new Date(formation.dateFormation).toLocaleDateString()}</p>
               <p className="text-gray-700">Nombre d'utilisations: {formation.nombreUtilisations}</p>
               <p className="text-gray-700">Thématique: {formation.thematique}</p>
-              <p className="text-gray-700">Prix: {formation.prix} </p>
+              <p className="text-gray-700">Prix: {formation.prix} fcfa</p>
               <p className="text-gray-700">Date d'ajout: {new Date(formation.createdAt).toLocaleDateString()}</p>
               <p className="text-gray-700">Dernière modification: {new Date(formation.updatedAt).toLocaleDateString()}</p>
 
               <div className="mt-2 flex justify-between">
                 <button 
-                  className="bg-blue-500 text-white p-2 rounded-lg"
+                  className="bg-blue-500 text-white p-2 rounded-lg px-2 py-1 sm:px-3 sm:py-2 md:px-4 md:py-2  text-xs sm:text-sm md:text-base"
                   onClick={() => handleDetails(formation._id)}
                 >
                   {showDetails === formation._id ? 'Masquer' : 'Voir détails'}
                 </button>
                 <button 
-                  className="bg-yellow-500 text-white p-2 rounded-lg"
+                  className="bg-yellow-500 text-white p-2 rounded-lg px-2 py-1 sm:px-3 sm:py-2 md:px-4 md:py-2  text-xs sm:text-sm md:text-base"
                   onClick={() => handleEdit(formation)}
                 >
                   Modifier
                 </button>
                 <button 
-                  className="bg-red-500 text-white p-2 rounded-lg"
+                  className="bg-red-500 text-white p-2 rounded-lg px-2 py-1 sm:px-3 sm:py-2 md:px-4 md:py-2  text-xs sm:text-sm md:text-base"
                   onClick={() => handleDelete(formation._id)}
                 >
                   Supprimer
@@ -146,69 +156,68 @@ function Accueil() {
         </div>
       )}
 
-      {/* Formulaire de modification */}
-      {editingFormation && (
-        <div className="mt-6 p-6 bg-white rounded-lg shadow-lg border-2 border-blue-200 ">
-          <h3 className="text-xl font-semibold text-blue-700 mb-4">Modifier la formation</h3>
-          <form onSubmit={handleUpdate} className="space-y-4">
-            <input
-              type="text"
-              name="nom"
-              value={updatedFormation.nom}
-              onChange={handleChange}
-              className="w-full p-2 border border-gray-300 rounded"
-              placeholder="Nom de la formation"
-              required
-            />
-            <input
-              type="date"
-              name="dateFormation"
-              value={updatedFormation.dateFormation}
-              onChange={handleChange}
-              className="w-full p-2 border border-gray-300 rounded"
-              required
-            />
-            <input
-              type="number"
-              name="nombreUtilisations"
-              value={updatedFormation.nombreUtilisations}
-              onChange={handleChange}
-              className="w-full p-2 border border-gray-300 rounded"
-              placeholder="Nombre d'utilisations"
-              required
-            />
-            <input
-              type="text"
-              name="thematique"
-              value={updatedFormation.thematique}
-              onChange={handleChange}
-              className="w-full p-2 border border-gray-300 rounded"
-              placeholder="Thématique"
-              required
-            />
-            <input
-              type="number"
-              name="prix"
-              value={updatedFormation.prix}
-              onChange={handleChange}
-              className="w-full p-2 border border-gray-300 rounded"
-              placeholder="Prix "
-              required
-            />
-            <button 
-              type="submit" 
-              className=" bg-green-500 text-white p-2 rounded-lg"
-            >
-              Modifier
-            </button>
-            <button
-              type="button"
-              onClick={() => setEditingFormation(null)}
-              className=" bg-gray-500 text-white p-2 rounded-lg mt-2"
-            >
-              Annuler
-            </button>
-          </form>
+      {/* Modal de modification */}
+      {isModalOpen && (
+        <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-full sm:w-96">
+            <h2 className="text-xl font-semibold text-blue-700 mb-4">Modifier la formation</h2>
+            <form onSubmit={handleUpdate}>
+              <input
+                type="text"
+                name="nom"
+                value={updatedFormation.nom}
+                onChange={handleChange}
+                className="w-full p-2 border border-gray-300 rounded mb-4"
+                placeholder="Nom de la formation"
+                required
+              />
+              <input
+                type="date"
+                name="dateFormation"
+                value={updatedFormation.dateFormation}
+                onChange={handleChange}
+                className="w-full p-2 border border-gray-300 rounded mb-4"
+                required
+              />
+              <input
+                type="number"
+                name="nombreUtilisations"
+                value={updatedFormation.nombreUtilisations}
+                onChange={handleChange}
+                className="w-full p-2 border border-gray-300 rounded mb-4"
+                placeholder="Nombre d'utilisations"
+                required
+              />
+              <input
+                type="text"
+                name="thematique"
+                value={updatedFormation.thematique}
+                onChange={handleChange}
+                className="w-full p-2 border border-gray-300 rounded mb-4"
+                placeholder="Thématique"
+                required
+              />
+              <input
+                type="number"
+                name="prix"
+                value={updatedFormation.prix}
+                onChange={handleChange}
+                className="w-full p-2 border border-gray-300 rounded mb-4"
+                placeholder="Prix"
+                required
+              />
+              <div className="flex justify-end">
+                <button type="submit" className="bg-green-500 text-white px-4 py-2 rounded-md">Modifier</button>
+                <button
+                  type="button"
+                  onClick={closeModal}
+                  className="bg-gray-500 text-white px-4 py-2 rounded-md ml-2"
+                >
+                  Annuler
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
       )}
     </div>
