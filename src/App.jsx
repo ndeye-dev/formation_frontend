@@ -10,7 +10,7 @@ function App() {
         <nav className="bg-blue-400 text-white p-3 shadow-md">
           <div className="container mx-auto flex justify-between items-center">
             {/* Titre */}
-            <h1 className="text-2xl font-semibold">Ma Plateforme</h1>
+            <h1 className="text-2xl font-semibold">CoursEnLigne</h1>
 
             {/* Liste des liens de navigation */}
             <ul className="flex space-x-6">

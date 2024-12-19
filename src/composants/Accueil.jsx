@@ -1,5 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { FaEye } from "react-icons/fa";
+import { HiPencilSquare } from "react-icons/hi2";
+import { MdDelete } from "react-icons/md";
+
 
 function Accueil() {
   const [formations, setFormations] = useState([]);
@@ -61,7 +65,7 @@ function Accueil() {
       thematique: formation.thematique,
       prix: formation.prix
     });
-    setIsModalOpen(true);  // Ouvrir le modal lors de l'édition
+    setIsModalOpen(true);
   };
 
   // Mettre à jour une formation
@@ -80,7 +84,7 @@ function Accueil() {
         setFormations(formations.map(formation => 
           formation._id === editingFormation._id ? response.data : formation
         ));
-        setIsModalOpen(false);  // Fermer le modal après mise à jour
+        setIsModalOpen(false); 
         setEditingFormation(null);
       })
       .catch(error => {
@@ -125,29 +129,31 @@ function Accueil() {
 
               <div className="mt-2 flex justify-between">
                 <button 
-                  className="bg-blue-500 text-white p-2 rounded-lg px-2 py-1 sm:px-3 sm:py-2 md:px-4 md:py-2  text-xs sm:text-sm md:text-base"
+                  className="text-blue-500 text-3xl p-2  rounded-lg px-2 py-1 sm:px-3 sm:py-2 md:px-4 md:py-2  text-xs sm:text-sm md:text-base"
                   onClick={() => handleDetails(formation._id)}
                 >
-                  {showDetails === formation._id ? 'Masquer' : 'Voir détails'}
+                  {showDetails === formation._id ? 'Masquer' : [<FaEye />]}
                 </button>
-                <button 
-                  className="bg-yellow-500 text-white p-2 rounded-lg px-2 py-1 sm:px-3 sm:py-2 md:px-4 md:py-2  text-xs sm:text-sm md:text-base"
+               <div className=''>
+               <button 
+                  className="text-yellow-500 text-white p-2 rounded-lg px-2 py-1 sm:px-3 sm:py-2 md:px-4 md:py-2  text-xs sm:text-sm md:text-base"
                   onClick={() => handleEdit(formation)}
                 >
-                  Modifier
+                 <HiPencilSquare />
                 </button>
                 <button 
-                  className="bg-red-500 text-white p-2 rounded-lg px-2 py-1 sm:px-3 sm:py-2 md:px-4 md:py-2  text-xs sm:text-sm md:text-base"
+                  className="text-red-500  p-2 rounded-lg px-2 py-1 sm:px-3 sm:py-2 md:px-4 md:py-2  text-xs sm:text-sm md:text-base"
                   onClick={() => handleDelete(formation._id)}
                 >
-                  Supprimer
+                  <MdDelete />
                 </button>
+               </div>
               </div>
 
               {showDetails === formation._id && (
                 <div className="mt-4 text-gray-500">
                   <p>Thématique: {formation.thematique}</p>
-                  <p>Prix: {formation.prix} €</p>
+                  <p>Prix: {formation.prix} fcfa</p>
                   <p>Date de la formation: {new Date(formation.dateFormation).toLocaleDateString()}</p>
                 </div>
               )}
