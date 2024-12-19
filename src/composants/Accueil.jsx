@@ -120,12 +120,12 @@ function Accueil() {
           {formations.map((formation) => (
             <div key={formation._id} className="bg-white p-6 rounded-lg shadow-lg border-2 border-blue-200 hover:border-blue-500">
               <h2 className="text-lg font-semibold text-blue-700">{formation.nom}</h2>
-              <p className="text-gray-700">Date de la formation: {new Date(formation.dateFormation).toLocaleDateString()}</p>
-              <p className="text-gray-700">Nombre d'utilisations: {formation.nombreUtilisations}</p>
-              <p className="text-gray-700">Thématique: {formation.thematique}</p>
-              <p className="text-gray-700">Prix: {formation.prix} fcfa</p>
-              <p className="text-gray-700">Date d'ajout: {new Date(formation.createdAt).toLocaleDateString()}</p>
-              <p className="text-gray-700">Dernière modification: {new Date(formation.updatedAt).toLocaleDateString()}</p>
+              {/* <p className="text-gray-700"><strong>Date de la formation:</strong> {new Date(formation.dateFormation).toLocaleDateString()}</p> */}
+              <p className="text-gray-700"><strong>Nombre d'utilisations:</strong> {formation.nombreUtilisations}</p>
+              {/* <p className="text-gray-700">Thématique: {formation.thematique}</p> */}
+              {/* <p className="text-gray-700">Prix: {formation.prix} fcfa</p> */}
+              <p className="text-gray-700"><strong>Date d'ajout:</strong> {new Date(formation.createdAt).toLocaleDateString()}</p>
+              <p className="text-gray-700"><strong>Dernière modification:</strong> {new Date(formation.updatedAt).toLocaleDateString()}</p>
 
               <div className="mt-2 flex justify-between">
                 <button 
@@ -152,9 +152,9 @@ function Accueil() {
 
               {showDetails === formation._id && (
                 <div className="mt-4 text-gray-500">
-                  <p>Thématique: {formation.thematique}</p>
-                  <p>Prix: {formation.prix} fcfa</p>
-                  <p>Date de la formation: {new Date(formation.dateFormation).toLocaleDateString()}</p>
+                  <p><strong>Thématique:</strong> {formation.thematique}</p>
+                  <p><strong>Prix:</strong> {formation.prix} fcfa</p>
+                  <p><strong>Date de la formation:</strong> {new Date(formation.dateFormation).toLocaleDateString()}</p>
                 </div>
               )}
             </div>
