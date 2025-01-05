@@ -3,24 +3,22 @@ import axios from 'axios';
 import { FaEye } from "react-icons/fa";
 import { HiPencilSquare } from "react-icons/hi2";
 import { MdDelete } from "react-icons/md";
-
-
+import { Link } from 'react-router-dom';
 function Accueil() {
   const [formations, setFormations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [editingFormation, setEditingFormation] = useState(null);
   const [showDetails, setShowDetails] = useState(null);
-
   const [updatedFormation, setUpdatedFormation] = useState({
     nom: '',
     dateFormation: '',
     nombreUtilisations: '',
     thematique: '',
-    prix: ''
+    prix: '',
+    imageUrl: ''
   });
-
-  const [isModalOpen, setIsModalOpen] = useState(false);  // État pour ouvrir/fermer le modal
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     axios.get('https://formation-backend.onrender.com/api/formations')
@@ -46,16 +44,10 @@ function Accueil() {
     }
   };
 
-  // Afficher les détails
   const handleDetails = (id) => {
-    if (showDetails === id) {
-      setShowDetails(null);
-    } else {
-      setShowDetails(id);
-    }
+    setShowDetails(showDetails === id ? null : id);
   };
 
-  // Initialiser la modification de la formation
   const handleEdit = (formation) => {
     setEditingFormation(formation);
     setUpdatedFormation({
@@ -63,28 +55,27 @@ function Accueil() {
       dateFormation: formation.dateFormation,
       nombreUtilisations: formation.nombreUtilisations,
       thematique: formation.thematique,
-      prix: formation.prix
+      prix: formation.prix,
+      imageUrl: formation.imageUrl
     });
     setIsModalOpen(true);
   };
 
-  // Mettre à jour une formation
   const handleUpdate = (e) => {
     e.preventDefault();
+    const { nom, dateFormation, nombreUtilisations, thematique, prix, imageUrl } = updatedFormation;
 
-    const { nom, dateFormation, nombreUtilisations, thematique, prix } = updatedFormation;
-
-    if (!nom || !dateFormation || !nombreUtilisations || !thematique || !prix) {
+    if (!nom || !dateFormation || !nombreUtilisations || !thematique || !prix || !imageUrl) {
       alert('Tous les champs sont requis');
       return;
     }
 
     axios.put(`https://formation-backend.onrender.com/api/formations/${editingFormation._id}`, updatedFormation)
       .then(response => {
-        setFormations(formations.map(formation => 
+        setFormations(formations.map(formation =>
           formation._id === editingFormation._id ? response.data : formation
         ));
-        setIsModalOpen(false); 
+        setIsModalOpen(false);
         setEditingFormation(null);
       })
       .catch(error => {
@@ -101,7 +92,6 @@ function Accueil() {
     });
   };
 
-  // Fermer le modal
   const closeModal = () => {
     setIsModalOpen(false);
     setEditingFormation(null);
@@ -109,8 +99,21 @@ function Accueil() {
 
   return (
     <div className="container mx-auto p-4 bg-blue-50">
-      <h1 className="text-3xl font-extrabold text-blue-600 mb-6">Formations</h1>
-      
+      <div className='flex justify-between items-center '>
+        <h1 className="text-3xl font-extrabold text-blue-600 mb-6">Formations</h1>
+
+        <ul>
+          <li>
+            <Link
+              to="/AjoutFormation"
+              className="text-white bg-blue-600 hover:bg-blue-600 hover:text-white px-2 py-1 sm:px-3 sm:py-2 md:px-4 md:py-2 lg:px-6 lg:py-3 rounded-full transition duration-300 text-xs sm:text-sm md:text-base"
+            >
+              Ajouter Formation
+            </Link>
+          </li>
+        </ul>
+      </div>
+
       {loading ? (
         <div className="text-center text-gray-500">Chargement...</div>
       ) : error ? (
@@ -119,35 +122,47 @@ function Accueil() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {formations.map((formation) => (
             <div key={formation._id} className="bg-white p-6 rounded-lg shadow-lg border-2 border-blue-200 hover:border-blue-500">
+              {formation.imageUrl ? (
+                <img
+                  src={formation.imageUrl.startsWith("http") ? formation.imageUrl : `https://formation-backend.onrender.com${formation.imageUrl}`}
+                  alt={formation.nom}
+                  className="w-full h-48 object-cover mb-4 rounded"
+                  onError={(e) => e.target.src = "https://via.placeholder.com/150"} 
+                />
+              ) : (
+                <img
+                  src="https://upload.wikimedia.org/wikipedia/commons/6/6a/JavaScript-logo.png"
+                  alt="Image par défaut"
+                  className="w-full h-48 object-cover mb-4 rounded"
+                />
+              )}
+
               <h2 className="text-lg font-semibold text-blue-700">{formation.nom}</h2>
-              {/* <p className="text-gray-700"><strong>Date de la formation:</strong> {new Date(formation.dateFormation).toLocaleDateString()}</p> */}
               <p className="text-gray-700"><strong>Nombre d'utilisations:</strong> {formation.nombreUtilisations}</p>
-              {/* <p className="text-gray-700">Thématique: {formation.thematique}</p> */}
-              {/* <p className="text-gray-700">Prix: {formation.prix} fcfa</p> */}
               <p className="text-gray-700"><strong>Date d'ajout:</strong> {new Date(formation.createdAt).toLocaleDateString()}</p>
               <p className="text-gray-700"><strong>Dernière modification:</strong> {new Date(formation.updatedAt).toLocaleDateString()}</p>
 
               <div className="mt-2 flex justify-between">
-                <button 
-                  className="text-blue-500 text-3xl p-2  rounded-lg px-2 py-1 sm:px-3 sm:py-2 md:px-4 md:py-2  text-xs sm:text-sm md:text-base"
+                <button
+                  className="text-blue-500 text-3xl p-2 rounded-lg px-2 py-1 sm:px-3 sm:py-2 md:px-4 md:py-2 text-xs sm:text-sm md:text-base"
                   onClick={() => handleDetails(formation._id)}
                 >
-                  {showDetails === formation._id ? 'Masquer' : [<FaEye />]}
+                  {showDetails === formation._id ? 'Masquer' : <FaEye />}
                 </button>
-               <div className=''>
-               <button 
-                  className="text-yellow-500 text-white p-2 rounded-lg px-2 py-1 sm:px-3 sm:py-2 md:px-4 md:py-2  text-xs sm:text-sm md:text-base"
-                  onClick={() => handleEdit(formation)}
-                >
-                 <HiPencilSquare />
-                </button>
-                <button 
-                  className="text-red-500  p-2 rounded-lg px-2 py-1 sm:px-3 sm:py-2 md:px-4 md:py-2  text-xs sm:text-sm md:text-base"
-                  onClick={() => handleDelete(formation._id)}
-                >
-                  <MdDelete />
-                </button>
-               </div>
+                <div>
+                  <button
+                    className="text-yellow-500 text-white p-2 rounded-lg px-2 py-1 sm:px-3 sm:py-2 md:px-4 md:py-2 text-xs sm:text-sm md:text-base"
+                    onClick={() => handleEdit(formation)}
+                  >
+                    <HiPencilSquare />
+                  </button>
+                  <button
+                    className="text-red-500 p-2 rounded-lg px-2 py-1 sm:px-3 sm:py-2 md:px-4 md:py-2 text-xs sm:text-sm md:text-base"
+                    onClick={() => handleDelete(formation._id)}
+                  >
+                    <MdDelete />
+                  </button>
+                </div>
               </div>
 
               {showDetails === formation._id && (
@@ -162,7 +177,6 @@ function Accueil() {
         </div>
       )}
 
-      {/* Modal de modification */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center z-50">
           <div className="bg-white p-6 rounded-lg shadow-lg w-full sm:w-96">
@@ -211,6 +225,14 @@ function Accueil() {
                 className="w-full p-2 border border-gray-300 rounded mb-4"
                 placeholder="Prix"
                 required
+              />
+              <input
+                type="text"
+                name="imageUrl"
+                value={updatedFormation.imageUrl}
+                onChange={handleChange}
+                className="w-full p-2 border border-gray-300 rounded mb-4"
+                placeholder="URL de l'image"
               />
               <div className="flex justify-end">
                 <button type="submit" className="bg-green-500 text-white px-4 py-2 rounded-md">Modifier</button>

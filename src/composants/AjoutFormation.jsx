@@ -2,12 +2,12 @@ import React, { useState } from 'react';
 import axios from 'axios';
 
 function AjoutFormation() {
- 
   const [nom, setNom] = useState('');
   const [dateFormation, setDateFormation] = useState('');
   const [nombreUtilisations, setNombreUtilisations] = useState('');
   const [thematique, setThematique] = useState('');
   const [prix, setPrix] = useState('');
+  const [imageUrl, setImageUrl] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -15,7 +15,15 @@ function AjoutFormation() {
     e.preventDefault();
     setLoading(true);
 
-    if (!nom || !dateFormation || !nombreUtilisations || !thematique || !prix) {
+    // Validation de l'URL de l'image
+    const imageValide = /^https?:\/\/.*\.(?:png|jpg|jpeg|gif|bmp|svg)$/;
+    if (!imageUrl || !imageValide.test(imageUrl)) {
+      setError("Veuillez entrer une URL d'image valide.");
+      setLoading(false);
+      return;
+    }
+
+    if (!nom || !dateFormation || !nombreUtilisations || !thematique || !prix || !imageUrl) {
       setError("Tous les champs sont requis");
       setLoading(false);
       return;
@@ -26,7 +34,8 @@ function AjoutFormation() {
       dateFormation,
       nombreUtilisations: parseInt(nombreUtilisations),
       thematique,
-      prix: parseFloat(prix)
+      prix: parseFloat(prix),
+      imageUrl
     };
 
     // Envoi de la requête POST au backend
@@ -38,6 +47,7 @@ function AjoutFormation() {
         setNombreUtilisations('');
         setThematique('');
         setPrix('');
+        setImageUrl(''); 
         alert('Formation ajoutée avec succès!');
       })
       .catch(error => {
@@ -92,6 +102,16 @@ function AjoutFormation() {
           placeholder="Thématique"
           required
         />
+        
+        {/* Champ pour l'URL de l'image */}
+        <input
+          type="text"
+          value={imageUrl}
+          onChange={(e) => setImageUrl(e.target.value)}
+          className="w-full p-2 border border-gray-300 rounded"
+          placeholder="URL de l'image"
+          required
+        />
 
         {/* Champ pour le prix */}
         <input
@@ -100,7 +120,7 @@ function AjoutFormation() {
           value={prix}
           onChange={(e) => setPrix(e.target.value)}
           className="w-full p-2 border border-gray-300 rounded"
-          placeholder="Prix "
+          placeholder="Prix"
           required
         />
 
@@ -113,6 +133,16 @@ function AjoutFormation() {
           {loading ? 'Ajout en cours...' : 'Ajouter la formation'}
         </button>
       </form>
+
+      {/* Affichage de l'image */}
+      <div className="mt-4 text-center">
+        <h3 className="font-semibold">Aperçu de l'image :</h3>
+        <img
+          src={imageUrl}
+          alt="Aperçu de l'image"
+          className="mx-auto mt-2 rounded-lg w-48 h-48 object-cover"
+        />
+      </div>
     </div>
   );
 }
