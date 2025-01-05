@@ -4,6 +4,7 @@ import { FaEye } from "react-icons/fa";
 import { HiPencilSquare } from "react-icons/hi2";
 import { MdDelete } from "react-icons/md";
 import { Link } from 'react-router-dom';
+
 function Accueil() {
   const [formations, setFormations] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -97,6 +98,29 @@ function Accueil() {
     setEditingFormation(null);
   };
 
+  const renderImage = (imageUrl) => {
+    const defaultImage = "https://via.placeholder.com/150"; 
+
+    if (imageUrl && imageUrl.startsWith("http")) {
+      return (
+        <img
+          src={imageUrl}
+          alt="Formation"
+          className="w-full h-48 object-cover mb-4 rounded"
+          onError={(e) => e.target.src = defaultImage}  // Si l'image échoue à se charger, on met l'image par défaut
+        />
+      );
+    }
+
+    return (
+      <img
+        src={defaultImage}
+        alt="Image par défaut"
+        className="w-full h-48 object-cover mb-4 rounded"
+      />
+    );
+  };
+
   return (
     <div className="container mx-auto p-4 bg-blue-50">
       <div className='flex justify-between items-center '>
@@ -122,20 +146,7 @@ function Accueil() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {formations.map((formation) => (
             <div key={formation._id} className="bg-white p-6 rounded-lg shadow-lg border-2 border-blue-200 hover:border-blue-500">
-              {formation.imageUrl ? (
-                <img
-                  src={formation.imageUrl.startsWith("http") ? formation.imageUrl : `https://formation-backend.onrender.com${formation.imageUrl}`}
-                  alt={formation.nom}
-                  className="w-full h-48 object-cover mb-4 rounded"
-                  onError={(e) => e.target.src = "https://via.placeholder.com/150"} 
-                />
-              ) : (
-                <img
-                  src="https://upload.wikimedia.org/wikipedia/commons/6/6a/JavaScript-logo.png"
-                  alt="Image par défaut"
-                  className="w-full h-48 object-cover mb-4 rounded"
-                />
-              )}
+              {renderImage(formation.imageUrl)}
 
               <h2 className="text-lg font-semibold text-blue-700">{formation.nom}</h2>
               <p className="text-gray-700"><strong>Nombre d'utilisations:</strong> {formation.nombreUtilisations}</p>
@@ -233,15 +244,21 @@ function Accueil() {
                 onChange={handleChange}
                 className="w-full p-2 border border-gray-300 rounded mb-4"
                 placeholder="URL de l'image"
+                required
               />
-              <div className="flex justify-end">
-                <button type="submit" className="bg-green-500 text-white px-4 py-2 rounded-md">Modifier</button>
+              <div className="flex justify-between mt-4">
                 <button
                   type="button"
+                  className="bg-gray-400 p-2 rounded-lg"
                   onClick={closeModal}
-                  className="bg-gray-500 text-white px-4 py-2 rounded-md ml-2"
                 >
                   Annuler
+                </button>
+                <button
+                  type="submit"
+                  className="bg-green-500 text-white p-2 rounded-lg"
+                >
+                 Modifier
                 </button>
               </div>
             </form>

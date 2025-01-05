@@ -10,6 +10,7 @@ function AjoutFormation() {
   const [imageUrl, setImageUrl] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [imageError, setImageError] = useState(null);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -18,9 +19,11 @@ function AjoutFormation() {
     // Validation de l'URL de l'image
     const imageValide = /^https?:\/\/.*\.(?:png|jpg|jpeg|gif|bmp|svg)$/;
     if (!imageUrl || !imageValide.test(imageUrl)) {
-      setError("Veuillez entrer une URL d'image valide.");
+      setImageError("Veuillez entrer une URL d'image valide.");
       setLoading(false);
       return;
+    } else {
+      setImageError(null); 
     }
 
     if (!nom || !dateFormation || !nombreUtilisations || !thematique || !prix || !imageUrl) {
@@ -47,7 +50,7 @@ function AjoutFormation() {
         setNombreUtilisations('');
         setThematique('');
         setPrix('');
-        setImageUrl(''); 
+        setImageUrl('');
         alert('Formation ajoutée avec succès!');
       })
       .catch(error => {
@@ -62,6 +65,7 @@ function AjoutFormation() {
       
       {/* Affichage de l'erreur, si elle existe */}
       {error && <div className="text-red-500 mb-4">{error}</div>}
+      {imageError && <div className="text-red-500 mb-4">{imageError}</div>}
       
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Champ pour le nom de la formation */}
@@ -137,11 +141,15 @@ function AjoutFormation() {
       {/* Affichage de l'image */}
       <div className="mt-4 text-center">
         <h3 className="font-semibold">Aperçu de l'image :</h3>
-        <img
-          src={imageUrl}
-          alt="Aperçu de l'image"
-          className="mx-auto mt-2 rounded-lg w-48 h-48 object-cover"
-        />
+        {imageUrl && !imageError ? (
+          <img
+            src={imageUrl}
+            alt="Aperçu de l'image"
+            className="mx-auto mt-2 rounded-lg w-48 h-48 object-cover "
+          />
+        ) : (
+          <div className="text-red-500 mt-2">L'URL de l'image est invalide ou vide.</div>
+        )}
       </div>
     </div>
   );
